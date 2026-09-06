@@ -198,7 +198,9 @@ class HTTPSession extends CurlSession {
     if (params.referrer) {
       params.headers["Referer"] = params.referrer;
     }
-    if (!params.headers["User-Agent"]) {
+    //the impersonated profile already provides its own browser user-agent,
+    //so only fall back to the page's user-agent when impersonation is off
+    if (!params.headers["User-Agent"] && !impersonate_profile && !params.impersonate) {
       params.headers["User-Agent"] = navigator.userAgent;
     }
     if (body && !params.headers["Content-Type"]) {
