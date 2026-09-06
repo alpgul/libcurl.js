@@ -2,7 +2,7 @@
 #include <string.h>
 
 #include "curl/curl.h"
-#include "mbedtls/base64.h"
+#include "openssl/base64.h"
 
 #include "cacert.h"
 
@@ -40,8 +40,7 @@ void generate_pem() {
     strcpy((char*) (cacert_pem + offset), begin_cert_str);
     offset += begin_cert_len;
 
-    size_t olen;
-    mbedtls_base64_encode(cacert_pem + offset, b64_len+1, &olen, cert, cert_len);
+    EVP_EncodeBlock(cacert_pem + offset, cert, cert_len);
     offset += b64_len;
 
     strcpy((char*) (cacert_pem + offset), end_cert_str);

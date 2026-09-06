@@ -1,7 +1,7 @@
 #include <stdlib.h>
 
-#include "curl/multi.h"
 #include "curl/curl.h"
+#include "curl/multi.h"
 
 #include "types.h"
 #include "request.h"
