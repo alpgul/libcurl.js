@@ -1,0 +1,6 @@
+services:
+  libcurl:
+    build: .
+    ports:
+      - "6001:6001"
+    restart: unless-stopped

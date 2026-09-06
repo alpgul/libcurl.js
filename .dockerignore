@@ -1,0 +1,8 @@
+client/build
+client/out
+**/__pycache__
+**/*.pyc
+**/.venv
+.git
+.git/objects
+website
