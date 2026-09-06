@@ -31,13 +31,23 @@ function check_loaded(check_websocket) {
 }
 function set_websocket_url(url) {
   websocket_url = url;
-  if (typeof Module.websocket === "undefined") 
-    Module.websocket = {};
-  if (typeof SOCKFS.websocketArgs !== "undefined") 
-    SOCKFS.websocketArgs.url = url;
-  Module.websocket.url = url;
   if (!main_session && wasm_ready) {
     setup_main_session();
+  }
+}
+
+//the browser TLS impersonation profile used for new requests
+//set to a browser string (e.g. "chrome146", "chrome136", "safari_17_0")
+//or null/falsy to disable impersonation entirely
+var impersonate_profile = "chrome146";
+
+function set_impersonate_profile(profile) {
+  impersonate_profile = profile;
+  if (profile) {
+    c_func(_set_impersonate_profile, [profile]);
+  }
+  else {
+    c_func(_set_impersonate_profile, [""]);
   }
 }
 
@@ -66,6 +76,7 @@ function setup_main_session() {
 function main() {
   wasm_ready = true;
   _init_curl();
+  set_impersonate_profile(impersonate_profile);
 
   if (!main_session && websocket_url) {
     setup_main_session();
@@ -138,6 +149,9 @@ api = {
   get version() {return get_version()},
   get ready() {return wasm_ready},
   get websocket_url() {return websocket_url},
+
+  get impersonate() {return impersonate_profile},
+  set impersonate(profile) {set_impersonate_profile(profile)},
 
   get stdout() {return out},
   set stdout(callback) {out = callback},

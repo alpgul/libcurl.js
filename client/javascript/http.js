@@ -44,6 +44,11 @@ class HTTPSession extends CurlSession {
       let http_handle = null;
       let body_ptr = null; 
 
+      //per-request impersonate profile override (falls back to the global one)
+      if (params.impersonate) {
+        set_impersonate_profile(params.impersonate);
+      }
+
       let headers_callback = (stream) => {
         let response_json = c_func_str(_http_get_info, [http_handle]);
         let response = this.constructor.create_response(stream, JSON.parse(response_json));
