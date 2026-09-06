@@ -11,11 +11,21 @@
 void http_set_options(CURL* http_handle, const char* json_params, const char* body, int body_length) {
   struct RequestInfo *request_info = get_request_info(http_handle);
 
+  //check if impersonation is active (curl_easy_impersonate already sets headers, encoding, http version)
+  extern const char* g_impersonate_profile;
+  int impersonating = (g_impersonate_profile != NULL && g_impersonate_profile[0] != '\0');
+
   //some default options
   curl_easy_setopt(http_handle, CURLOPT_FOLLOWLOCATION, 1);
+
+  //accept-encoding: always set (enables auto-decompression + sets the header)
+  //impersonate sets it via HTTP header, but CURLOPT_ACCEPT_ENCODING also enables auto-decompress
   curl_easy_setopt(http_handle, CURLOPT_ACCEPT_ENCODING, "");
-  curl_easy_setopt(http_handle, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_2_0);
-  curl_easy_setopt(http_handle, CURLOPT_IGNORE_ONION, 1L);
+
+  //skip http version when impersonating (handled by curl_easy_impersonate)
+  if (!impersonating) {
+    curl_easy_setopt(http_handle, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_2_0);
+  }
 
   //parse json options
   cJSON* request_json = cJSON_Parse(json_params);
@@ -60,7 +70,10 @@ void http_set_options(CURL* http_handle, const char* json_params, const char* bo
         free(header_str);
       }
 
-      curl_easy_setopt(http_handle, CURLOPT_HTTPHEADER, headers_list);
+      //only set if user actually provided headers — don't clear impersonated headers with an empty list
+      if (headers_list != NULL) {
+        curl_easy_setopt(http_handle, CURLOPT_HTTPHEADER, headers_list);
+      }
     }
 
     if (strcmp(key, "redirect") == 0 && cJSON_IsString(item)) {
