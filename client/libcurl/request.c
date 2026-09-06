@@ -15,6 +15,18 @@ void forward_headers(struct RequestInfo *request_info);
 
 extern struct curl_blob cacert_blob;
 
+const char* g_impersonate_profile = NULL;
+
+void set_impersonate_profile(const char* profile) {
+  if (g_impersonate_profile) {
+    free(g_impersonate_profile);
+    g_impersonate_profile = NULL;
+  }
+  if (profile && profile[0] != '\0') {
+    g_impersonate_profile = strdup(profile);
+  }
+}
+
 size_t write_function(char *data, size_t size, size_t nmemb, struct RequestInfo *request_info) {
   size_t real_size = size * nmemb;
   (*request_info->data_callback)(request_info->request_id, data, real_size);
@@ -30,6 +42,11 @@ size_t header_function(char *data, size_t size, size_t nmemb, struct RequestInfo
 CURL* create_request(const char* url, int request_id, DataCallback data_callback, EndCallback end_callback, DataCallback headers_callback) {
   CURL *http_handle = curl_easy_init();  
 
+  //impersonate a browser TLS profile (from curl-chrome/curl-impersonate)
+  if (g_impersonate_profile != NULL && g_impersonate_profile[0] != '\0') {
+    curl_easy_impersonate(http_handle, g_impersonate_profile, 1);
+  }
+
   //create request metadata struct
   struct RequestInfo *request_info = malloc(sizeof(struct RequestInfo));
   request_info->http_handle = http_handle;
@@ -43,6 +60,9 @@ CURL* create_request(const char* url, int request_id, DataCallback data_callback
   curl_easy_setopt(http_handle, CURLOPT_PRIVATE, request_info);
   curl_easy_setopt(http_handle, CURLOPT_URL, url);
   curl_easy_setopt(http_handle, CURLOPT_CAINFO_BLOB, cacert_blob);
+  //curl is compiled with CURL_CA_PATH set to /etc/ssl/certs, which doesn't exist
+  //inside the wasm environment - disable it so that the cacert blob is used
+  curl_easy_setopt(http_handle, CURLOPT_CAPATH, NULL);
   curl_easy_setopt(http_handle, CURLOPT_BUFFERSIZE, 512*1024);
 
   //emscripten doesn't support tcp nodelay anyways
