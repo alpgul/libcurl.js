@@ -1,3 +1,6 @@
 [submodule "client/wisp_client"]
 	path = client/wisp_client
 	url = https://github.com/MercuryWorkshop/wisp-client-js
+[submodule "server/worker-wisp-server"]
+	path = server/worker-wisp-server
+	url = https://github.com/alpgul/worker-wisp-server.git

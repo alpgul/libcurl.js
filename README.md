@@ -242,7 +242,7 @@ You can change the underlying network transport by setting `libcurl.transport`. 
 ### Changing the Websocket Proxy URL:
 You can change the URL of the websocket proxy by using `libcurl.set_websocket`.
 ```js
-libcurl.set_websocket("ws://localhost:6001/");
+libcurl.set_websocket("wss://wisp-worker.your-subdomain.workers.dev/");
 ```
 If the websocket proxy URL is not set and one of the other API functions is called, an error will be thrown. Note that this URL must end with a trailing slash.
 
@@ -294,14 +294,17 @@ The `libcurl.wisp` object exposes all of the APIs from [wisp-client-js](https://
 ## Proxy Server:
 The proxy server consists of a standard [Wisp](https://github.com/MercuryWorkshop/wisp-protocol) server, allowing multiple TCP connections to share the same websocket.
 
-To host the proxy server, run the following commands:
-```
-git clone https://github.com/ading2210/libcurl.js --recursive
-cd libcurl.js
-server/run.sh --static=./client
-```
+The backend is a [Cloudflare Worker](server/worker-wisp-server) that relays TCP traffic over Cloudflare's `connect()` API and is wire-compatible with the Wisp protocol. It can be run locally or deployed to Cloudflare:
 
-For a full list of server arguments, see the [wisp-server-python documentation](https://github.com/MercuryWorkshop/wisp-server-python).
+```bash
+# local development (serves the test pages + wisp on http://localhost:8787)
+cd libcurl.js
+docker compose up -d
+
+# or deploy to Cloudflare (needs the wrangler OAuth/API token)
+cd server/worker-wisp-server
+npx wrangler deploy
+```
 
 ## Project Structure:
 - `client` - Contains all the client-side code.
@@ -312,7 +315,7 @@ For a full list of server arguments, see the [wisp-server-python documentation](
   - `tools` - Helper shell scripts for the build process, and for compiling the various C libraries.
   - `wisp_client` - A submodule for the Wisp client library.
 - `server` - Contains all the server-side code for running the websocket proxy server. 
-  - `wisp_server` - A submodule for the Python Wisp server.
+  - `worker-wisp-server` - A Cloudflare Worker that implements the Wisp protocol and relays TCP over Cloudflare's `connect()` API.
 - `server` - Contains the HTML source for the project's main website.
 
 ## Copyright:
@@ -322,4 +325,4 @@ This project is licensed under the [GNU LGPL v3](https://www.gnu.org/licenses/lg
 > 
 > \- From [tldrlegal.com](https://www.tldrlegal.com/license/gnu-lesser-general-public-license-v3-lgpl-3)
 
-Do note that the code present in the Wisp server submodule is a separate project and is still licensed under the GNU AGPL v3. The server-related code in this repository is just a wrapper to run the Wisp server.
+Do note that the code present in the Wisp server (`server/worker-wisp-server`) is a separate project and is still licensed under the GNU AGPL v3 (see `LICENSE` in that directory).

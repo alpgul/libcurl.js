@@ -1,6 +1,8 @@
 services:
-  libcurl:
-    build: .
+  worker:
+    build: ./server/worker-wisp-server
     ports:
-      - "6001:6001"
+      - "8787:8787"
+    environment:
+      WRANGLER_SEND_METRICS: "false"
     restart: unless-stopped

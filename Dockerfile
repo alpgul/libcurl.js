@@ -32,20 +32,7 @@ COPY --from=deps /src/client/build /src/client/build
 WORKDIR /src/client
 RUN ./build.sh all
 
-# serve the built libcurl.js and the wisp proxy server
-FROM python:3.12-slim AS runtime
-
-ENV DEBIAN_FRONTEND=noninteractive
-
-RUN apt-get update && apt-get install -y --no-install-recommends git netcat-openbsd \
-    && rm -rf /var/lib/apt/lists/*
-
-WORKDIR /app
-COPY --from=builder /src/server/wisp_server ./wisp_server
-RUN pip install --no-cache-dir -e ./wisp_server
-
+# final image: just the built client artifacts, used by client/tools/sync-static.sh
+# the proxy server itself is the Cloudflare Worker (server/worker-wisp-server)
+FROM alpine:3.20 AS static
 COPY --from=builder /src/client/out /app/static
-COPY test/browserleaks.html /app/static/index.html
-
-EXPOSE 6001
-CMD ["python3", "-m", "wisp.server", "--host", "0.0.0.0", "--port", "6001", "--static", "/app/static", "--allow-private", "--allow-loopback"]
