@@ -40,9 +40,9 @@ RUNTIME_METHODS="addFunction,removeFunction,allocate,ALLOC_NORMAL"
 COMPILER_OPTIONS="-o $MODULE_FILE -lcurl -lssl -lcrypto -lcjson -lz -lbrotlidec -lbrotlicommon -lzstd -lnghttp2 -I $INCLUDE_DIR -L $LIB_DIR"
 EMSCRIPTEN_OPTIONS="-lwebsocket.js -sENVIRONMENT=worker,web -sASSERTIONS=1 -sLLD_REPORT_UNDEFINED -sALLOW_TABLE_GROWTH -sALLOW_MEMORY_GROWTH -sNO_EXIT_RUNTIME -sEXPORTED_FUNCTIONS=$EXPORTED_FUNCS -sEXPORTED_RUNTIME_METHODS=$RUNTIME_METHODS"
 
-#clean output dir
-rm -rf $OUT_DIR
-mkdir -p $OUT_DIR
+#clean output dir (works even when OUT_DIR is a docker volume mount point)
+mkdir -p "$OUT_DIR"
+rm -rf "$OUT_DIR"/* "$OUT_DIR"/.[!.]* 2>/dev/null || true
 
 if [[ "$*" == *"all"* ]]; then
   mkdir -p $OUT_DIR/release

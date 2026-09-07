@@ -1,8 +1,30 @@
 services:
+  # Builds the client (wasm + js) into the shared `libcurljs_out` volume.
+  # Run it, let it exit, then the worker picks up the fresh artifacts:
+  #   docker compose up -d client
+  client:
+    build:
+      context: .
+      target: builder
+    image: libcurljs-client-builder
+    volumes:
+      - libcurl_out:/src/client/out
+    command: ./build.sh all
+    restart: "no"
+
+  # Wisp/wsproxy Cloudflare Worker (server/worker-wisp-server). On start it copies
+  # /libcurl.js and /libcurl.wasm from the shared build volume into its assets dir
+  # (see entrypoint.sh), then runs wrangler dev on :8787.
   worker:
     build: ./server/worker-wisp-server
     ports:
       - "8787:8787"
     environment:
       WRANGLER_SEND_METRICS: "false"
+    volumes:
+      - libcurl_out:/client-out:ro
     restart: unless-stopped
+
+volumes:
+  libcurl_out:
+    name: libcurljs_out
