@@ -6,7 +6,7 @@ if (!url.endsWith("/")) url += "/";
 url += parts[0] + ":" + port;
 
 /* REPLACE
-url ?= ?SOCKFS\.websocketArgs\[['"]url['"]\];
+url ?= ?SOCKFS\.websocketArgs\[['"]url['"]\][;}]?
 */
 var parts = addr.split("/");
 url = Module.websocket.url;
