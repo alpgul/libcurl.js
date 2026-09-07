@@ -31,7 +31,7 @@ class JSTest(unittest.TestCase):
     self.browser.quit()
   
   def run_test(self, script):
-    self.browser.get(f"http://localhost:6001/tests/#{script}")
+    self.browser.get(f"http://localhost:8788/tests/#{script}")
     wait = WebDriverWait(self.browser, 20)
     result = wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, '.flag'))).get_attribute("result")
 

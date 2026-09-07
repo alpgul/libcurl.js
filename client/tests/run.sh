@@ -4,13 +4,16 @@ set -e
 
 trap "exit" INT TERM
 trap "kill 0" EXIT
-../server/run.sh --static=$(pwd) --log-level=WARN >/dev/null &
 
-echo -n "waiting for wisp server to start"
+# The wisp proxy is the Cloudflare Worker (server/worker-wisp-server). It can run locally
+# (`docker compose up -d`) or be deployed to Cloudflare. Edit HOST if needed.
+HOST="http://localhost:8787"
+
+echo -n "waiting for wisp worker on $HOST"
 i=0
-until $(curl --output /dev/null --silent --head "http://localhost:6001/"); do
+until curl --output /dev/null --silent --head "$HOST/"; do
   if [ "$i" = "30" ]; then
-    echo -e "\ntests failed. wisp server failed to start"
+    echo -e "\ntests failed. wisp worker not responding on $HOST"
     exit 1
   fi
 
@@ -18,10 +21,12 @@ until $(curl --output /dev/null --silent --head "http://localhost:6001/"); do
   i=$(($i+1))
   sleep 1
 done
-echo 
+echo
 
 
-sleep 1
-echo "wisp server ready, running tests"
+# serve the static test files locally (the wisp/ws traffic flows through the worker)
+python3 -m http.server 8788 >/dev/null 2>&1 &
+
+echo "wisp worker ready, running tests"
 export SE_AVOID_STATS=true #turn of selenium telemetry
 python3 tests/run_tests.py
