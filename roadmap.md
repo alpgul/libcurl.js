@@ -76,7 +76,7 @@ Legend:
 - [ ] **[R][S] Server: bandwidth cap.** `M`. Add a per-IP byte-rate token budget
       alongside the stream-count limit so a single client cannot saturate the
       free-tier quota (the inverse of Tier-1 buffering).
-- [ ] **[S] Server: rate-limit failed auth attempts.** `S`. Wrong/missing
+- [x] **[S] Server: rate-limit failed auth attempts.** `S`. Wrong/missing
       password handshakes (`0xc0`/`0xc2`) are not counted today; only opened
       streams are. Add a per-IP failed-handshake counter and close with `0x49`
       (throttled) past the threshold.
