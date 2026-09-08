@@ -54,7 +54,7 @@ Legend:
       triggers on a ws `error`/`close`. Fail with an `error` event + ws close
       when INFO / v1 CONTINUE(0) has not arrived within a configurable
       `HANDSHAKE_TIMEOUT`, after one v1 fallback attempt.
-- [ ] **[P][F] Client: surface stream-open confirmation.** `S`. The server
+- [x] **[P][F] Client: surface stream-open confirmation.** `S`. The server
       already offers extension `0x05` and sends a per-stream CONTINUE once the
       socket is connected, but the client only uses it to refill `buffer_size`
       (`wisp.js`, `continue_received`). Emit an `open` event on `WispStream`

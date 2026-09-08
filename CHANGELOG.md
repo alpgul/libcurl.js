@@ -1,5 +1,8 @@
 # Libcurl.js Changelog:
 
+## v0.8.3 (9/8/26):
+- Surface stream-open confirmation from the bundled wisp client: when extension `0x05` is negotiated, each `WispStream` fires an `open` event and `await stream.ready` resolves on the server's per-stream CONTINUE, so slow or failed CONNECTs are detected early; a stream closed before its confirmation rejects `ready`
+
 ## v0.8.2 (9/8/26):
 - Add a handshake timeout to the bundled wisp client (`HANDSHAKE_TIMEOUT`, default 10s): when a live-but-quiet server never sends the v2 `INFO` / v1 `CONTINUE(0)` packet, the client retries once as v1 and, failing that, emits an `error` event and closes the websocket instead of hanging in `connecting` forever
 
