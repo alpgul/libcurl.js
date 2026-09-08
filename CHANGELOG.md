@@ -1,5 +1,8 @@
 # Libcurl.js Changelog:
 
+## v0.8.1 (9/8/26):
+- Rate-limit failed password handshakes on the worker: with `RATELIMIT_ENABLED`, per-IP failed auth attempts are counted per window and close with `CLOSE 0x49` (throttled) past `RATELIMIT_AUTH_FAILURES` (default 5)
+
 ## v0.8.0 (9/8/26):
 - Add browser TLS/HTTP profile impersonation via `curl_easy_impersonate`, exposed in JS as `libcurl.impersonate` with a per-request `impersonate` override
 - Replace the Mbed TLS backend with a BoringSSL fork and build curl from the lexiforest curl-chrome impersonate fork
