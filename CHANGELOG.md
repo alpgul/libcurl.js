@@ -1,5 +1,8 @@
 # Libcurl.js Changelog:
 
+## v0.8.2 (9/8/26):
+- Add a handshake timeout to the bundled wisp client (`HANDSHAKE_TIMEOUT`, default 10s): when a live-but-quiet server never sends the v2 `INFO` / v1 `CONTINUE(0)` packet, the client retries once as v1 and, failing that, emits an `error` event and closes the websocket instead of hanging in `connecting` forever
+
 ## v0.8.1 (9/8/26):
 - Rate-limit failed password handshakes on the worker: with `RATELIMIT_ENABLED`, per-IP failed auth attempts are counted per window and close with `CLOSE 0x49` (throttled) past `RATELIMIT_AUTH_FAILURES` (default 5)
 

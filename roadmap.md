@@ -48,7 +48,7 @@ Legend:
 - [ ] **[P] Wire coalescing.** `L`. Batch small tcp→ws DATA frames to amortize
       per-message overhead for bulk transfers, without hurting interactive
       latency. Pair with buffer tuning.
-- [ ] **[P][R] Client: handshake timeout.** `S`. Currently a live-but-silent
+- [x] **[P][R] Client: handshake timeout.** `S`. Currently a live-but-silent
       server hangs the connection forever: the client never fires `open` and
       reports no error (`wisp.js`, `connect_ws`), and the v1 fallback only
       triggers on a ws `error`/`close`. Fail with an `error` event + ws close
