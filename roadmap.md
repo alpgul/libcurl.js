@@ -73,7 +73,7 @@ Legend:
       CONTINUE credits, the client pushes into an **unbounded** `send_buffer`
       until OOM (`wisp.js`, `WispStream.send`). Cap it; past the cap, close the
       stream with an error instead of growing memory.
-- [ ] **[R] Client + server: liveness/keepalive.** `M`. The client has no
+- [x] **[R] Client + server: liveness/keepalive.** `M`. The client has no
       keepalive, timeout, or idle cleanup; the worker relies on Cloudflare's
       default TCP idle timeout (~7 min) because it never passes `idleTimeout`
       to `socket.connect()` (`net.js`). Client: periodic keepalive + report a

@@ -1,5 +1,8 @@
 # Libcurl.js Changelog:
 
+## v0.8.9 (9/8/26):
+- Liveness/keepalive on both ends. The worker sweep now closes streams silent past `STREAM_IDLE_TIMEOUT` (default 120s, env-configurable) with `CLOSE 0x47`, run lazily on inbound packets, and `socket.connect()` gets an explicit `SOCKET_IDLE_TIMEOUT` (default 60s) so a fully quiet upstream socket self-closes instead of holding a connection at Cloudflare's ~7-minute default. The bundled wisp client (now 2.5.0) adds an `idle_timeout` watchdog (a silent server is reported as `error` + `close` `0x47`, composing with reconnect) and a `keepalive_interval` probe (stream-0 `CONTINUE(max_buffer_size)` when idle) so servers can detect a dead remote
+
 ## v0.8.8 (9/8/26):
 - Client: connection-level auto reconnect. The bundled wisp client can now retry an unexpected websocket drop with exponential backoff (`reconnect_backoff`, `reconnect_backoff_multiplier`, `reconnect_backoff_max`, `reconnect_jitter`), rotate through `fallback_urls`, and give up with `error` + `close` after `reconnect_max_attempts`. Each retry fires a `reconnecting` event (`attempt`/`delay`/`url`). Opt-in (`reconnect: true`); a deliberate `close()` and a rejected handshake never reconnect. Wisp client bumped to 2.4.0; bundle rebuilt
 
