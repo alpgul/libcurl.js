@@ -1,5 +1,8 @@
 # Libcurl.js Changelog:
 
+## v0.8.5 (9/8/26):
+- Worker: HTTP(S) hygiene. Non-loopback requests arriving over a plain scheme are now refused: `http://` page loads get a `308` redirect to `https://`, and `ws://` websocket upgrades get `426` (browsers do not follow 3xx on upgrades). Controlled by `ENFORCE_HTTPS` (default on); `localhost`/loopback is always exempt so the local dev server keeps working
+
 ## v0.8.4 (9/8/26):
 - Worker: raise the per-stream flow-control window from 128 to 512 packets (`queue_size` in `server/util.js`), cutting CONTINUE round trips for sustained transfers; tests now derive window sizes from the exported value instead of hard-coding
 

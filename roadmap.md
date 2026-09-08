@@ -104,9 +104,11 @@ Legend:
 - [x] **[S] Server: destination allowlist.** `S`. Optional `ALLOW_HOSTNAME`
       allowlist to complement the blocklist (exact + subdomain match, IP
       literals verbatim; non-matching destinations close with `0x48`).
-- [ ] **[S] Server: HTTP(S) hygiene.** `S`. Enforce `wss://`/redirect plain
-      HTTP to HTTPS so credentials and traffic are never in clear; document
-      that production assumes this.
+- [x] **[S] Server: HTTP(S) hygiene.** `S`. Enforce `wss://`/redirect plain
+      HTTP to HTTPS so credentials and traffic are never in clear. Non-loopback
+      plain requests get a `308` redirect; `ws://` upgrades get `426`
+      (`index.js` `https_policy`, `ENFORCE_HTTPS`, default on, localhost
+      exempt for dev). Documented; covered by `test/http.test.js`.
 - [ ] **[F][S] Public/private key auth (extension `0x03`).** `L`. ECDSA
       challenge-response using WebCrypto on the client and `crypto.subtle` on
       the worker, replacing shared-secret distribution.
