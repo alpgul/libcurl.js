@@ -1,5 +1,8 @@
 # Libcurl.js Changelog:
 
+## v0.8.7 (9/8/26):
+- Worker: metrics/observability. The isolate keeps in-memory runtime counters (connections accepted, streams opened/closed, bytes+packets in both directions, downstream stalls, peak outbound-queue fill, CLOSEs by reason) and exposes them as plain text at `GET /__metrics` (`?reset=1` starts a clean window; non-GET/HEAD gets `405`). Counters are per-isolate, so sample over short windows. Also fixes a latent test-helper bug where CONNECT packets carried a trailing NUL byte that bypassed the hostname blocklist
+
 ## v0.8.6 (9/8/26):
 - Worker: downstream overload policy. Wisp has no server→client flow control, so a client that stops consuming previously filled Cloudflare's ws buffers until the connection died with a late, unexplained `NETWORK_ERROR`. The tcp→ws path now uses a bounded per-stream outbound queue (`DOWNSTREAM_BUFFER`, `drain_downstream` in `wisp.js`); the TCP reader pauses while it is full, and if the queue stays full past `DOWNSTREAM_STALL_TIMEOUT` the stream is proactively closed with `0x03` instead
 

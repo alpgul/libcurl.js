@@ -46,10 +46,11 @@ Legend:
       `drain_downstream`) and a proactive CLOSE (0x03) once a full queue
       persists past `DOWNSTREAM_STALL_TIMEOUT`. The TCP reader pauses while
       the buffer is full, letting TCP backpressure reach the remote producer.
-- [ ] **[P] Metrics/observability.** `M`. Expose counters (streams, bytes,
-      rejects, buffer fill) via Cloudflare analytics or a lightweight
-      `/__metrics` endpoint so the other performance items can be validated
-      with data instead of guesses.
+- [x] **[P] Metrics/observability.** `M`. Expose counters (streams, bytes,
+      rejects, buffer fill) via a lightweight `/__metrics` endpoint so the
+      other performance items are validated with data instead of guesses.
+      Counters are per-isolate and in-memory (`metrics.js`), plain-text
+      prometheus-style, `?reset=1` for a clean window, `405` for other methods.
 - [ ] **[P] Wire coalescing.** `L`. Batch small tcp→ws DATA frames to amortize
       per-message overhead for bulk transfers, without hurting interactive
       latency. Pair with buffer tuning.
