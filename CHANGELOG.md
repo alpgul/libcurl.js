@@ -1,5 +1,8 @@
 # Libcurl.js Changelog:
 
+## v0.8.6 (9/8/26):
+- Worker: downstream overload policy. Wisp has no server→client flow control, so a client that stops consuming previously filled Cloudflare's ws buffers until the connection died with a late, unexplained `NETWORK_ERROR`. The tcp→ws path now uses a bounded per-stream outbound queue (`DOWNSTREAM_BUFFER`, `drain_downstream` in `wisp.js`); the TCP reader pauses while it is full, and if the queue stays full past `DOWNSTREAM_STALL_TIMEOUT` the stream is proactively closed with `0x03` instead
+
 ## v0.8.5 (9/8/26):
 - Worker: HTTP(S) hygiene. Non-loopback requests arriving over a plain scheme are now refused: `http://` page loads get a `308` redirect to `https://`, and `ws://` websocket upgrades get `426` (browsers do not follow 3xx on upgrades). Controlled by `ENFORCE_HTTPS` (default on); `localhost`/loopback is always exempt so the local dev server keeps working
 

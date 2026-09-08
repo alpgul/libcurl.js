@@ -38,11 +38,14 @@ Legend:
       `max_buffer_size` — it trusts the server's CONTINUE grant, so it climbs
       automatically. Re-ran the backpressure and CONTINUE tests after the
       change.
-- [ ] **[P][R] Server: downstream overload policy.** `M`. Wisp CONTINUE credits
+- [x] **[P][R] Server: downstream overload policy.** `M`. Wisp CONTINUE credits
       only ever gate client→server data, so a client that stops consuming
       saturates Cloudflare's ws buffers and dies with a late, unexplained
-      `NETWORK_ERROR` (0x03). Replace the platform backstop with a bounded
-      per-stream buffer and a proactive CLOSE (0x03/throttle).
+      `NETWORK_ERROR` (0x03). Replaced the platform backstop with a bounded
+      per-stream tcp→ws buffer (`DOWNSTREAM_BUFFER`, `wisp.js`
+      `drain_downstream`) and a proactive CLOSE (0x03) once a full queue
+      persists past `DOWNSTREAM_STALL_TIMEOUT`. The TCP reader pauses while
+      the buffer is full, letting TCP backpressure reach the remote producer.
 - [ ] **[P] Metrics/observability.** `M`. Expose counters (streams, bytes,
       rejects, buffer fill) via Cloudflare analytics or a lightweight
       `/__metrics` endpoint so the other performance items can be validated
