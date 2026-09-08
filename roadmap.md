@@ -63,7 +63,7 @@ Legend:
 
 ## Tier 2 — Resilience and resource protection
 
-- [ ] **[R] Client: bound `send_buffer`.** `S`. When the server stops granting
+- [x] **[R] Client: bound `send_buffer`.** `S`. When the server stops granting
       CONTINUE credits, the client pushes into an **unbounded** `send_buffer`
       until OOM (`wisp.js`, `WispStream.send`). Cap it; past the cap, close the
       stream with an error instead of growing memory.
