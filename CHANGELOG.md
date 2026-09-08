@@ -10,6 +10,9 @@
 - Fix the wsproxy SOCKFS websocket URL parser to tolerate a trailing `;` or `}`
 - Dockerize the emscripten build and the worker dev server, with a multi-stage deps cache for faster rebuilds
 - Point the local test suite at the Cloudflare Worker backend and add browser fingerprint tests
+- Add a destination allowlist (`ALLOW_HOSTNAME`) to the worker, complementing the existing blocklists; destinations outside the allowlist close with `CLOSE 0x48`
+- Bound the wisp client's per-stream send buffer (`max_send_buffer`, default 16 MiB): if the server grants no CONTINUE credits and the cap is exceeded, the stream fails with `CLIENT_ERROR` instead of growing memory
+- Restore the test page's Wisp proxy and impersonation profile selectors and refresh the 0.8.0 build artifacts to bundle the wisp client v2.1.0
 
 ## v0.7.4 (12/1/25):
 - Export `libcurl.wasm` in the NPM package ([PR #8](https://github.com/ading2210/libcurl.js/pull/8))
