@@ -1,5 +1,16 @@
 # Libcurl.js Changelog:
 
+## v0.8.0 (9/8/26):
+- Add browser TLS/HTTP profile impersonation via `curl_easy_impersonate`, exposed in JS as `libcurl.impersonate` with a per-request `impersonate` override
+- Replace the Mbed TLS backend with a BoringSSL fork and build curl from the lexiforest curl-chrome impersonate fork
+- Add zstd compression support and switch the CA certificate bundle to the OpenSSL base64 format
+- Do not inject the page's user-agent when an impersonation profile is active
+- Replace the Python wisp server with a Cloudflare Worker backend (`server/worker-wisp-server`)
+- Update the bundled wisp client to v2, adding the INFO handshake, extension negotiation, password auth, MOTD, stream-open confirmation, and an automatic v1 fallback
+- Fix the wsproxy SOCKFS websocket URL parser to tolerate a trailing `;` or `}`
+- Dockerize the emscripten build and the worker dev server, with a multi-stage deps cache for faster rebuilds
+- Point the local test suite at the Cloudflare Worker backend and add browser fingerprint tests
+
 ## v0.7.4 (12/1/25):
 - Export `libcurl.wasm` in the NPM package ([PR #8](https://github.com/ading2210/libcurl.js/pull/8))
 - Allow requests to `.onion` domains (overriding [upstream curl behavior](https://github.com/curl/curl/discussions/11125))
