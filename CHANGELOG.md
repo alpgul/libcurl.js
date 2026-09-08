@@ -1,5 +1,8 @@
 # Libcurl.js Changelog:
 
+## v0.8.8 (9/8/26):
+- Client: connection-level auto reconnect. The bundled wisp client can now retry an unexpected websocket drop with exponential backoff (`reconnect_backoff`, `reconnect_backoff_multiplier`, `reconnect_backoff_max`, `reconnect_jitter`), rotate through `fallback_urls`, and give up with `error` + `close` after `reconnect_max_attempts`. Each retry fires a `reconnecting` event (`attempt`/`delay`/`url`). Opt-in (`reconnect: true`); a deliberate `close()` and a rejected handshake never reconnect. Wisp client bumped to 2.4.0; bundle rebuilt
+
 ## v0.8.7 (9/8/26):
 - Worker: metrics/observability. The isolate keeps in-memory runtime counters (connections accepted, streams opened/closed, bytes+packets in both directions, downstream stalls, peak outbound-queue fill, CLOSEs by reason) and exposes them as plain text at `GET /__metrics` (`?reset=1` starts a clean window; non-GET/HEAD gets `405`). Counters are per-isolate, so sample over short windows. Also fixes a latent test-helper bug where CONNECT packets carried a trailing NUL byte that bypassed the hostname blocklist
 

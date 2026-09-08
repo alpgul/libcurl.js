@@ -90,9 +90,14 @@ Legend:
       per-isolate and in-memory (`src/ratelimit.js`), so it is bypassable
       across isolates/regions. Move per-IP counters to a Durable Object for a
       single, globally consistent window.
-- [ ] **[F][P] Client: reconnect/backoff.** `M`. Retry with exponential backoff
-      on failed or dropped connections, with optional multi-server fallback —
-      also cuts recovery latency for flaky networks.
+- [x] **[F][P] Client: reconnect/backoff.** `M`. Connection-level auto reconnect
+      with exponential backoff on failed or dropped connections, optional
+      `fallback_urls` failover rotation, bounded retries
+      (`reconnect_max_attempts`), and a `reconnecting` event per attempt. A
+      deliberate `close()` and a rejected handshake never reconnect; the client
+      resets the backoff once a reconnected connection opens. Streams are
+      closed with `NETWORK_ERROR` on a drop and re-created by the app on the
+      fresh connection's `open` event.
 
 ## Tier 3 — Features and hardening
 
