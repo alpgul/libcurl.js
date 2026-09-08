@@ -1,5 +1,8 @@
 # Libcurl.js Changelog:
 
+## v0.8.4 (9/8/26):
+- Worker: raise the per-stream flow-control window from 128 to 512 packets (`queue_size` in `server/util.js`), cutting CONTINUE round trips for sustained transfers; tests now derive window sizes from the exported value instead of hard-coding
+
 ## v0.8.3 (9/8/26):
 - Surface stream-open confirmation from the bundled wisp client: when extension `0x05` is negotiated, each `WispStream` fires an `open` event and `await stream.ready` resolves on the server's per-stream CONTINUE, so slow or failed CONNECTs are detected early; a stream closed before its confirmation rejects `ready`
 

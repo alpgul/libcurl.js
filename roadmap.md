@@ -32,10 +32,12 @@ Legend:
 
 ## Tier 1 — Performance
 
-- [ ] **[P] Buffer tuning.** `S`, low risk. Raise `max_buffer_size` (client) and
-      `queue_size` (worker, currently 128) to 512–1024: fewer CONTINUE round
-      trips per RTT, measurably higher throughput. Cost: memory per stream;
-      re-run the backpressure tests after the change.
+- [x] **[P] Buffer tuning.** `S`, low risk. Raise the per-stream flow-control
+      window to 512 packets (worker `queue_size`, was 128): fewer CONTINUE round
+      trips per RTT, measurably higher throughput. The client has no fixed
+      `max_buffer_size` — it trusts the server's CONTINUE grant, so it climbs
+      automatically. Re-ran the backpressure and CONTINUE tests after the
+      change.
 - [ ] **[P][R] Server: downstream overload policy.** `M`. Wisp CONTINUE credits
       only ever gate client→server data, so a client that stops consuming
       saturates Cloudflare's ws buffers and dies with a late, unexplained
