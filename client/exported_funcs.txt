@@ -18,6 +18,7 @@ get_error_str
 http_set_options
 http_get_info
 http_set_cookie_jar
+set_request_option
 
 websocket_set_options
 recv_from_websocket

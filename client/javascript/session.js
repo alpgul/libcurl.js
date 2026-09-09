@@ -192,4 +192,70 @@ class CurlSession {
 
     return this.create_request(url, real_data_callback, real_end_callback, () => {});
   }
+
+  //typed JS->C bridge: set a curl option on a single per-request easy handle.
+  //this is the escape hatch for options that the fixed JSON params mapping
+  //(libcurl/javascript/http.js) doesn't cover. call it after stream_response()
+  //and before start_request(). exceptions on unknown/unsafe options:
+  //  set_curl_option(handle, "CURLOPT_TIMEOUT", 30)
+  //  set_curl_option(handle, {opt: "CURLOPT_USERAGENT", type: "string", value: "..."})
+  //supported types: "long" (number/boolean), "string", "header-list"
+  //(newline-separated "Name: value" lines appended to the request headers).
+  set_curl_option(request_ptr, opt, value) {
+    return set_curl_option(request_ptr, opt, value);
+  }
+}
+
+//free-form variant, also exposed as api.set_curl_option
+function set_curl_option(http_handle, opt, value) {
+  let opt_name, opt_type;
+  if (typeof opt === "object" && opt !== null) {
+    opt_name = opt.opt;
+    opt_type = opt.type;
+    value = opt.value;
+  }
+  else {
+    opt_name = opt;
+  }
+
+  if (typeof opt_name !== "string") {
+    throw new TypeError("curl option name must be a string");
+  }
+  if (value === undefined) {
+    throw new TypeError(`no value given for curl option "${opt_name}"`);
+  }
+
+  if (!opt_type) {
+    if (typeof value === "number" || typeof value === "bigint" || typeof value === "boolean") {
+      opt_type = "long";
+    }
+    else if (typeof value === "string") {
+      opt_type = "string";
+    }
+    else {
+      throw new TypeError(`invalid value type for curl option "${opt_name}": ${typeof value}`);
+    }
+  }
+
+  let value_str;
+  if (opt_type === "long") {
+    if (typeof value === "boolean") value_str = value ? "1" : "0";
+    else if (typeof value === "number" || typeof value === "bigint") value_str = String(value);
+    else throw new TypeError(`value for curl option "${opt_name}" must be a number`);
+  }
+  else if (opt_type === "string" || opt_type === "header-list") {
+    if (typeof value !== "string") throw new TypeError(`value for curl option "${opt_name}" must be a string`);
+    value_str = value;
+  }
+  else {
+    throw new TypeError(`unsupported curl option type "${opt_type}"`);
+  }
+
+  let result = c_func(_set_request_option, [http_handle, opt_name, opt_type, value_str]);
+  if (result === 1) return true;
+  if (result === 0) throw new Error(`curl option "${opt_name}" is not supported`);
+  if (result === -1) throw new Error(`cannot apply curl option "${opt_name}": invalid request handle`);
+  if (result === -2) throw new TypeError(`value for curl option "${opt_name}" must be a number`);
+  if (result === -3) throw new TypeError(`type "${opt_type}" is not valid for curl option "${opt_name}"`);
+  throw new Error(`unexpected error applying curl option "${opt_name}"`);
 }

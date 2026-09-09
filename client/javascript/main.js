@@ -140,6 +140,7 @@ api = {
   CurlWebSocket: CurlWebSocket,
   TLSSocket: TLSSocket,
   HTTPSession: HTTPSession,
+  set_curl_option: set_curl_option,
   fetch() {
     check_loaded(true);
     throw new Error("not ready")

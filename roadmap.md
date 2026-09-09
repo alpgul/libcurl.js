@@ -101,7 +101,7 @@ Legend:
 
 ## Tier 3 — Features and hardening
 
-- [ ] **[F] Dynamic curl option control.** `M` + wasm rebuild. Today only a
+- [x] **[F] Dynamic curl option control.** `M` + wasm rebuild. Today only a
       fixed allowlist of JSON keys in `client/libcurl/http.c` reaches
       `curl_easy_setopt`; the raw option is not exported to JS
       (`client/exported_funcs.txt`). Add a typed JS→C bridge
@@ -109,7 +109,10 @@ Legend:
       `{opt, type: "long"|"string"|"header-list"|"blob", value}`) with a C-side
       allowlist (no raw pointers/callbacks), applying only to per-request easy
       handles before a transfer starts. The JSON `params` mapping stays the
-      canonical surface; this is the escape hatch.
+      canonical surface; this is the escape hatch. Implemented as
+      `set_request_option` in `client/libcurl/option.c`; `blob` type dropped to
+      avoid memory-lifetime copies (POST bodies already go through the `body`
+      param).
 - [x] **[S] Server: destination allowlist.** `S`. Optional `ALLOW_HOSTNAME`
       allowlist to complement the blocklist (exact + subdomain match, IP
       literals verbatim; non-matching destinations close with `0x48`).

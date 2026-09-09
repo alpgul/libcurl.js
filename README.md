@@ -161,6 +161,30 @@ console.log(await r.text());
 session.close();
 ```
 
+#### Setting Raw Curl Options:
+
+The JSON `params` mapping documented above is the canonical way to configure a request, but it only covers a handful of options. For everything else there is a typed escape hatch to `curl_easy_setopt`: `set_curl_option` (exposed on `libcurl` and on every `HTTPSession`). It applies to a single per-request easy handle, so you set it between `stream_response(url, ...)` and `start_request(handle)`:
+
+```js
+let session = new libcurl.HTTPSession();
+
+let handle = session.stream_response(
+  "https://example.com/",
+  (stream) => {},
+  (error) => console.log("done", error)
+);
+session.set_curl_option(handle, "CURLOPT_TIMEOUT", 30);            // long
+session.set_curl_option(handle, "CURLOPT_USERAGENT", "my-agent");  // string
+session.set_curl_option(handle, {
+  opt: "CURLOPT_HTTPHEADER_APPEND",
+  type: "header-list",
+  value: "X-Custom-Header: 1\nX-Other: 2"
+});
+session.start_request(handle);
+```
+
+The C side is an allowlist (`client/libcurl/option.c`) — only the options on it are ever reachable, and an unknown name or an invalid value throws instead of silently misbehaving. Supported types: `long` (number/boolean), `string`, `header-list` (newline-separated `Name: value` lines appended to the request headers). Raw pointers, callbacks, and blob-backed options are deliberately not exported; the `body` param covers request bodies. The allowlist: `CURLOPT_TIMEOUT`, `CURLOPT_CONNECTTIMEOUT`, `CURLOPT_LOW_SPEED_LIMIT`, `CURLOPT_LOW_SPEED_TIME`, `CURLOPT_MAXREDIRS`, `CURLOPT_FOLLOWLOCATION`, `CURLOPT_AUTOREFERER`, `CURLOPT_BUFFERSIZE`, `CURLOPT_RESUME_FROM`, `CURLOPT_MAXFILESIZE`, `CURLOPT_HTTP_VERSION`, `CURLOPT_TCP_NODELAY`, `CURLOPT_USERAGENT`, `CURLOPT_REFERER`, `CURLOPT_RANGE`, `CURLOPT_CUSTOMREQUEST`, `CURLOPT_ACCEPT_ENCODING`, `CURLOPT_COOKIE`, `CURLOPT_USERNAME`, `CURLOPT_PASSWORD`, `CURLOPT_HTTPHEADER_APPEND`.
+
 ### Creating WebSocket Connections:
 To use WebSockets, create a `libcurl.CurlWebSocket` object, which takes the following arguments:
 - `url` - The Websocket URL.
