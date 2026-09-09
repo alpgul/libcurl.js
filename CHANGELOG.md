@@ -1,5 +1,8 @@
 # Libcurl.js Changelog:
 
+## v0.8.11 (9/9/26):
+- Worker: global rate limiting via Durable Objects. The per-IP counters (streams per window, failed-auth count, bandwidth budget) now live in a `GlobalRateLimiter` Durable Object (`GLOBAL_RATELIMITER` binding, one fleet-wide instance named "global"): every isolate routes its counter operations there, so the fixed window is enforced once per IP across the whole fleet and survives isolate restarts, instead of being per-isolate memory. Windows roll over lazily on access (entries past `RATELIMIT_WINDOW` are re-initialized). Without a DO binding (node tests, plain deployments) the module falls back to an in-memory store with identical semantics. Worker bumped to 0.8.8
+
 ## v0.8.10 (9/8/26):
 - Worker: per-IP bandwidth cap (`BANDWIDTH_LIMIT`, default 25 MiB per rate-limit window). The inverse of the downstream queue: instead of bounding a buffered backlog it caps the sustained relayed-byte rate in both directions. When the budget is spent (with `RATELIMIT_ENABLED`), existing streams close with `CLOSE 0x49` and new `CONNECT`s are refused until the window rolls over; `0` disables the byte cap
 

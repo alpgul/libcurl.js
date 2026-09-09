@@ -86,7 +86,7 @@ Legend:
       password handshakes (`0xc0`/`0xc2`) are not counted today; only opened
       streams are. Add a per-IP failed-handshake counter and close with `0x49`
       (throttled) past the threshold.
-- [ ] **[S][R] Worker: global rate limiting.** `M`. The current limiter is
+- [x] **[S][R] Worker: global rate limiting.** `M`. The current limiter is
       per-isolate and in-memory (`src/ratelimit.js`), so it is bypassable
       across isolates/regions. Move per-IP counters to a Durable Object for a
       single, globally consistent window.
