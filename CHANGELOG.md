@@ -1,5 +1,8 @@
 # Libcurl.js Changelog:
 
+## v0.8.10 (9/8/26):
+- Worker: per-IP bandwidth cap (`BANDWIDTH_LIMIT`, default 25 MiB per rate-limit window). The inverse of the downstream queue: instead of bounding a buffered backlog it caps the sustained relayed-byte rate in both directions. When the budget is spent (with `RATELIMIT_ENABLED`), existing streams close with `CLOSE 0x49` and new `CONNECT`s are refused until the window rolls over; `0` disables the byte cap
+
 ## v0.8.9 (9/8/26):
 - Liveness/keepalive on both ends. The worker sweep now closes streams silent past `STREAM_IDLE_TIMEOUT` (default 120s, env-configurable) with `CLOSE 0x47`, run lazily on inbound packets, and `socket.connect()` gets an explicit `SOCKET_IDLE_TIMEOUT` (default 60s) so a fully quiet upstream socket self-closes instead of holding a connection at Cloudflare's ~7-minute default. The bundled wisp client (now 2.5.0) adds an `idle_timeout` watchdog (a silent server is reported as `error` + `close` `0x47`, composing with reconnect) and a `keepalive_interval` probe (stream-0 `CONTINUE(max_buffer_size)` when idle) so servers can detect a dead remote
 

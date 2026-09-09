@@ -79,7 +79,7 @@ Legend:
       to `socket.connect()` (`net.js`). Client: periodic keepalive + report a
       dropped peer as a close with an error. Server: configurable
       `STREAM_IDLE_TIMEOUT` + explicit `idleTimeout` on `connect()`.
-- [ ] **[R][S] Server: bandwidth cap.** `M`. Add a per-IP byte-rate token budget
+- [x] **[R][S] Server: bandwidth cap.** `M`. Add a per-IP byte-rate token budget
       alongside the stream-count limit so a single client cannot saturate the
       free-tier quota (the inverse of Tier-1 buffering).
 - [x] **[S] Server: rate-limit failed auth attempts.** `S`. Wrong/missing
