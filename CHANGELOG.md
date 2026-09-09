@@ -1,5 +1,8 @@
 # Libcurl.js Changelog:
 
+## v0.8.12 (9/9/26):
+- Worker: tcp→ws wire coalescing. The tcp reader batches small chunks into single DATA packets (`WISP_COALESCE_MAX`, default 64 KiB) before flushing them as one WebSocket message, amortizing per-message framing overhead for bulk transfers; flush also happens on downstream-queue pressure and after `WISP_COALESCE_TIMEOUT` ms (default 10) of quiet. The flush window is the only added latency and it is per-burst, so interactive traffic is not inflated per chunk; `0` restores the historical one-packet-per-chunk behavior. One ws message still carries exactly one packet, so the wire format and client interoperability are unchanged. Worker bumped to 0.8.9
+
 ## v0.8.11 (9/9/26):
 - Worker: global rate limiting via Durable Objects. The per-IP counters (streams per window, failed-auth count, bandwidth budget) now live in a `GlobalRateLimiter` Durable Object (`GLOBAL_RATELIMITER` binding, one fleet-wide instance named "global"): every isolate routes its counter operations there, so the fixed window is enforced once per IP across the whole fleet and survives isolate restarts, instead of being per-isolate memory. Windows roll over lazily on access (entries past `RATELIMIT_WINDOW` are re-initialized). Without a DO binding (node tests, plain deployments) the module falls back to an in-memory store with identical semantics. Worker bumped to 0.8.8
 

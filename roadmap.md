@@ -51,7 +51,7 @@ Legend:
       other performance items are validated with data instead of guesses.
       Counters are per-isolate and in-memory (`metrics.js`), plain-text
       prometheus-style, `?reset=1` for a clean window, `405` for other methods.
-- [ ] **[P] Wire coalescing.** `L`. Batch small tcp→ws DATA frames to amortize
+- [x] **[P] Wire coalescing.** `L`. Batch small tcp→ws DATA frames to amortize
       per-message overhead for bulk transfers, without hurting interactive
       latency. Pair with buffer tuning.
 - [x] **[P][R] Client: handshake timeout.** `S`. Currently a live-but-silent
